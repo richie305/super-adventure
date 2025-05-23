@@ -1,5 +1,4 @@
-
-import React, { useState, useCallback, useMemo, useEffect } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { LogEntryForm } from './components/LogEntryForm';
 import { LogList } from './components/LogList';
 import { LogEntry, LogEntryData, LogType, BathroomActivity, MealSubtype } from './types';
@@ -18,7 +17,7 @@ const App: React.FC = () => {
       const logEntriesCollection = collection(db, 'log_entries');
       const q = query(logEntriesCollection, orderBy('timestamp', 'desc'));
       const querySnapshot = await getDocs(q);
-      
+
       const entries: LogEntry[] = querySnapshot.docs.map(docSnap => {
         const data = docSnap.data();
         return {
@@ -51,7 +50,7 @@ const App: React.FC = () => {
     setError(null);
     try {
       const logEntriesCollection = collection(db, 'log_entries');
-      
+
       // Prepare data, converting JS Date to Firestore Timestamp if necessary
       const dataToSave: any = { ...entryData };
       if (entryData.timestamp instanceof Date) {
@@ -97,14 +96,14 @@ const App: React.FC = () => {
       formElement?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   }, []);
-  
+
   const handleDeleteEntry = useCallback(async (idToDelete: string) => {
     setIsLoading(true);
     setError(null);
     try {
       const entryRef = doc(db, 'log_entries', idToDelete);
       await deleteDoc(entryRef);
-      
+
       setLogEntries(prevEntries => prevEntries.filter(entry => entry.id !== idToDelete));
       if (editingEntry && editingEntry.id === idToDelete) {
         setEditingEntry(null);
@@ -117,10 +116,7 @@ const App: React.FC = () => {
     }
   }, [editingEntry]);
 
-  const sortedEntries = useMemo(() => {
-    // Already sorted by Firestore query
-    return logEntries;
-  }, [logEntries]);
+  const sortedEntries = logEntries;
 
   const formatTimeAgo = (date: Date): string => {
     const seconds = Math.floor((new Date().getTime() - date.getTime()) / 1000);
@@ -137,10 +133,10 @@ const App: React.FC = () => {
     if (seconds < 10) return "just now";
     return Math.floor(seconds) + " seconds ago";
   };
-  
-  const lastMeal = useMemo(() => sortedEntries.find(entry => entry.type === LogType.Meal), [sortedEntries]);
-  const lastPee = useMemo(() => sortedEntries.find(entry => entry.type === LogType.Bathroom && (entry.activity === BathroomActivity.Pee || entry.activity === BathroomActivity.Both)), [sortedEntries]);
-  const lastPoopEntry = useMemo(() => sortedEntries.find(entry => entry.type === LogType.Bathroom && (entry.activity === BathroomActivity.Poop || entry.activity === BathroomActivity.Both)), [sortedEntries]);
+
+  const lastMeal = sortedEntries.find(entry => entry.type === LogType.Meal);
+  const lastPee = sortedEntries.find(entry => entry.type === LogType.Bathroom && (entry.activity === BathroomActivity.Pee || entry.activity === BathroomActivity.Both));
+  const lastPoopEntry = sortedEntries.find(entry => entry.type === LogType.Bathroom && (entry.activity === BathroomActivity.Poop || entry.activity === BathroomActivity.Both));
 
 
   return (
@@ -165,13 +161,13 @@ const App: React.FC = () => {
         )}
 
         <section id="log-entry-form-section" aria-labelledby="form-heading">
-            <LogEntryForm 
-                onSaveEntry={saveLogEntry} 
+            <LogEntryForm
+                onSaveEntry={saveLogEntry}
                 editingEntry={editingEntry}
                 onCancelEdit={() => setEditingEntry(null)}
             />
         </section>
-        
+
         {isLoading && !logEntries.length && (
           <div className="text-center py-10">
             <svg className="animate-spin h-10 w-10 text-sky-600 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -205,8 +201,8 @@ const App: React.FC = () => {
         )}
 
         {(!isLoading || logEntries.length > 0) && (
-          <LogList 
-              entries={sortedEntries} 
+          <LogList
+              entries={sortedEntries}
               onEditEntry={handleSetEditingEntry}
               onDeleteEntry={handleDeleteEntry}
               isLoading={isLoading && logEntries.length > 0}
