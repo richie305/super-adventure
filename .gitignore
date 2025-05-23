@@ -4,7 +4,7 @@
 .firebaserc
 
 # Firebase Hosting
-/firebase.json
+# firebase.json # This file should typically be committed
 *.cache
 hosting/.cache
 
@@ -26,3 +26,15 @@ yarn-error.log*
 
 # Environment files (local configs)
 /.env.*
+
+# Node modules
+node_modules/
+
+# Build output
+dist/
+
+# Vite cache
+.vite/
+
+# Optional macOS-specific directory
+fsevents/
