@@ -4,8 +4,8 @@ build:
     - npm run build
 
 run:
-  command: npm run preview
-  display_name: More Pawsitive Preview
+  command: npm start
+  display_name: More Pawsitive App
 
 # Specify the Node.js version
 runtime: nodejs18
