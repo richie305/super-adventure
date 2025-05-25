@@ -1,0 +1,225 @@
+{
+  // The tasks.json schema version. Always "2.0.0" for modern tasks.
+  "version": "2.0.0",
+  "tasks": [
+      // --- Git Basic Operations ---
+      {
+          "label": "Git: Status",
+          "type": "shell",
+          "command": "git status",
+          "detail": "Show the working tree status.",
+          "group": "none",
+          "presentation": {
+              "reveal": "always", // Always show the terminal for status
+              "panel": "shared", // Reuse the shared terminal panel
+              "clear": true      // Clear the terminal before running
+          },
+          "problemMatcher": [] // No specific problem matching for git status
+      },
+      {
+          "label": "Git: Add All Changes",
+          "type": "shell",
+          "command": "git add .",
+          "detail": "Add all changes in the current directory to the staging area.",
+          "group": "none",
+          "presentation": {
+              "reveal": "silent", // Run silently, only show if errors
+              "panel": "shared",
+              "clear": true
+          },
+          "problemMatcher": []
+      },
+      {
+          "label": "Git: Commit (with message)",
+          "type": "shell",
+          "command": "git commit -v", // -v shows diff, helpful for reviewing before committing
+          "detail": "Commit staged changes. Opens editor for message.",
+          "group": "none",
+          "presentation": {
+              "reveal": "always", // Needs terminal for interactive message input
+              "panel": "new",     // Use a new panel for interactive commit
+              "clear": true
+          },
+          "problemMatcher": []
+      },
+      {
+          "label": "Git: Pull (current branch)",
+          "type": "shell",
+          "command": "git pull",
+          "detail": "Fetch from and integrate with another repository or a local branch.",
+          "group": "none",
+          "presentation": {
+              "reveal": "always",
+              "panel": "shared",
+              "clear": true
+          },
+          "problemMatcher": []
+      },
+      {
+          "label": "Git: Push (current branch)",
+          "type": "shell",
+          "command": "git push",
+          "detail": "Update remote refs along with associated objects.",
+          "group": "none",
+          "presentation": {
+              "reveal": "always",
+              "panel": "shared",
+              "clear": true
+          },
+          "problemMatcher": []
+      },
+      {
+          "label": "Git: Fetch All Remotes",
+          "type": "shell",
+          "command": "git fetch --all",
+          "detail": "Download objects and refs from another repository.",
+          "group": "none",
+          "presentation": {
+              "reveal": "silent",
+              "panel": "shared",
+              "clear": true
+          },
+          "problemMatcher": []
+      },
+      {
+          "label": "Git: Show Remote URLs",
+          "type": "shell",
+          "command": "git remote -v",
+          "detail": "List remote connections with their URLs.",
+          "group": "none",
+          "presentation": {
+              "reveal": "always",
+              "panel": "shared",
+              "clear": true
+          },
+          "problemMatcher": []
+      },
+
+      // --- Git Branch Operations ---
+      {
+          "label": "Git: List Branches",
+          "type": "shell",
+          "command": "git branch -a", // -a shows all (local and remote) branches
+          "detail": "List all local and remote branches.",
+          "group": "none",
+          "presentation": {
+              "reveal": "always",
+              "panel": "shared",
+              "clear": true
+          },
+          "problemMatcher": []
+      },
+      {
+          "label": "Git: Create New Branch",
+          "type": "shell",
+          "command": "read -p 'Enter new branch name: ' branchName && git checkout -b \"$branchName\"",
+          "detail": "Create and switch to a new branch.",
+          "group": "none",
+          "presentation": {
+              "reveal": "always",
+              "panel": "new", // New panel for interactive input
+              "clear": true
+          },
+          "problemMatcher": []
+      },
+      {
+          "label": "Git: Checkout Branch",
+          "type": "shell",
+          "command": "read -p 'Enter branch name to checkout: ' branchName && git checkout \"$branchName\"",
+          "detail": "Switch to an existing branch.",
+          "group": "none",
+          "presentation": {
+              "reveal": "always",
+              "panel": "new", // New panel for interactive input
+              "clear": true
+          },
+          "problemMatcher": []
+      },
+      {
+          "label": "Git: Delete Local Branch",
+          "type": "shell",
+          "command": "read -p 'Enter branch name to delete: ' branchName && git branch -d \"$branchName\"",
+          "detail": "Delete a local branch (must be merged or use -D for force).",
+          "group": "none",
+          "presentation": {
+              "reveal": "always",
+              "panel": "new",
+              "clear": true
+          },
+          "problemMatcher": []
+      },
+
+      // --- GitHub CLI (gh) Operations (requires GitHub CLI installed and authenticated) ---
+      // Install GitHub CLI: https://cli.github.com/
+      // Authenticate: gh auth login
+      {
+          "label": "GitHub: List Pull Requests",
+          "type": "shell",
+          "command": "gh pr list",
+          "detail": "List open pull requests for the current repository (requires GitHub CLI).",
+          "group": "none",
+          "presentation": {
+              "reveal": "always",
+              "panel": "shared",
+              "clear": true
+          },
+          "problemMatcher": []
+      },
+      {
+          "label": "GitHub: Create Pull Request",
+          "type": "shell",
+          "command": "gh pr create --web", // --web opens in browser for easier creation
+          "detail": "Create a new pull request (requires GitHub CLI).",
+          "group": "none",
+          "presentation": {
+              "reveal": "always",
+              "panel": "shared",
+              "clear": true
+          },
+          "problemMatcher": []
+      },
+      {
+          "label": "GitHub: View Current PR",
+          "type": "shell",
+          "command": "gh pr view --web",
+          "detail": "View the current branch's pull request in the browser (requires GitHub CLI).",
+          "group": "none",
+          "presentation": {
+              "reveal": "always",
+              "panel": "shared",
+              "clear": true
+          },
+          "problemMatcher": []
+      },
+
+      // --- Firebase CLI Operations (requires Firebase CLI installed and authenticated) ---
+      // Install Firebase CLI: https://firebase.google.com/docs/cli#install_the_cli
+      // Authenticate: firebase login
+      {
+          "label": "Firebase: Login",
+          "type": "shell",
+          "command": "firebase login",
+          "detail": "Log in to Firebase via your browser.",
+          "group": "none",
+          "presentation": {
+              "reveal": "always",
+              "panel": "new", // Often opens a browser, so a new panel is good
+              "clear": true
+          },
+          "problemMatcher": []
+      },
+      {
+          "label": "Firebase: List App Hosting Rollouts (super-adventure)",
+          "type": "shell",
+          "command": "firebase apphosting:rollouts:list --backend super-adventure",
+          "detail": "List rollouts for the 'super-adventure' App Hosting backend.",
+          "group": "none",
+          "presentation": {
+              "reveal": "always",
+              "panel": "shared",
+              "clear": true
+          },
+          "problemMatcher": []
+      }
+  ]
+}
