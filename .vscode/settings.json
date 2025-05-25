@@ -11,5 +11,12 @@
   "github.copilot.chat.edits.temporalContext.enabled": true,
   "github.copilot.chat.languageContext.fix.typescript.enabled": true,
   "github.copilot.chat.languageContext.inline.typescript.enabled": false,
-  "github.copilot.chat.search.keywordSuggestions": true
+  "github.copilot.chat.search.keywordSuggestions": true,
+  "github.copilot.chat.followUps": "firstOnly",
+  "github.copilot.chat.testGeneration.instructions": [
+
+  ],
+  "github-actions.workflows.pinned.workflows": [
+
+  ]
 }

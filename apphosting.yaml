@@ -1,5 +1,11 @@
+build:
+  commands:
+    - npm ci
+    - npm run build
+
 run:
   command: npm run preview
   display_name: More Pawsitive Preview
-# Optional: Specify the Node.js version if your project requires it
-# runtime: nodejs18
+
+# Specify the Node.js version
+runtime: nodejs18
