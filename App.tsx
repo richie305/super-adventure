@@ -4,12 +4,45 @@ import { LogList } from './components/LogList';
 import { LogEntry, LogEntryData, LogType, BathroomActivity, MealSubtype } from './types';
 import { db, Timestamp, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, orderBy, serverTimestamp } from './firebaseClient'; // Added serverTimestamp
 
+/**
+ * @file App.tsx
+ * @description This file defines the main application component (`App`).
+ * The `App` component is responsible for managing the state of log entries,
+ * handling CRUD operations (Create, Read, Update, Delete) for these entries with Firebase Firestore,
+ * and rendering the user interface for logging and viewing activities.
+ * It includes features like fetching, displaying, adding, editing, and deleting log entries,
+ * as well as a summary view of recent activities.
+ */
+
 const App: React.FC = () => {
+  /**
+   * @state `logEntries` - Holds an array of `LogEntry` objects.
+   * @description Stores all the log entries fetched from Firestore. Used to display the list of activities.
+   */
   const [logEntries, setLogEntries] = useState<LogEntry[]>([]);
+  /**
+   * @state `editingEntry` - Holds a `LogEntry` object or `null`.
+   * @description Stores the log entry currently being edited by the user. If `null`, no entry is being edited.
+   */
   const [editingEntry, setEditingEntry] = useState<LogEntry | null>(null);
+  /**
+   * @state `isLoading` - Holds a boolean value.
+   * @description Indicates whether data is currently being fetched or saved. Used to show loading indicators in the UI.
+   */
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  /**
+   * @state `error` - Holds a string message or `null`.
+   * @description Stores any error message that occurs during data operations. Displayed to the user if not `null`.
+   */
   const [error, setError] = useState<string | null>(null);
 
+  /**
+   * @function fetchLogEntries
+   * @description Fetches log entries from the Firebase Firestore database.
+   * It queries the 'log_entries' collection, orders them by timestamp in descending order,
+   * and updates the `logEntries` state.
+   * It also manages the `isLoading` and `error` states during the fetch operation.
+   */
   const fetchLogEntries = useCallback(async () => {
     setIsLoading(true);
     setError(null);
@@ -41,10 +74,29 @@ const App: React.FC = () => {
     }
   }, []);
 
+  /**
+   * @effect
+   * @description This `useEffect` hook is responsible for fetching the initial log entries when the component mounts.
+   * It calls `fetchLogEntries` to load data from Firestore.
+   * The dependency array `[fetchLogEntries]` ensures this effect runs if `fetchLogEntries` changes,
+   * which typically happens if its own dependencies change, maintaining data consistency.
+   */
   useEffect(() => {
     fetchLogEntries();
   }, [fetchLogEntries]);
 
+  /**
+   * @function saveLogEntry
+   * @description Saves or updates a log entry in Firebase Firestore.
+   * If `idToUpdate` is provided, it updates the existing entry; otherwise, it adds a new entry.
+   * It converts JavaScript `Date` objects to Firestore `Timestamp` objects before saving.
+   * For new entries without a specific timestamp, it uses `serverTimestamp()`.
+   * Undefined fields are removed from the data before saving.
+   * It handles loading states and updates the `error` state in case of failure.
+   * After a successful save, it refreshes the log entries.
+   * @param {LogEntryData} entryData - The data for the log entry to be saved.
+   * @param {string} [idToUpdate] - Optional. The ID of the log entry to update. If undefined, a new entry is created.
+   */
   const saveLogEntry = useCallback(async (entryData: LogEntryData, idToUpdate?: string) => {
     setIsLoading(true);
     setError(null);
@@ -89,6 +141,13 @@ const App: React.FC = () => {
     }
   }, [fetchLogEntries]);
 
+  /**
+   * @function handleSetEditingEntry
+   * @description Sets the `editingEntry` state to the provided log entry and scrolls the form into view.
+   * This function is typically called when a user clicks an "edit" button on a log entry.
+   * Scrolling ensures the form is visible for editing.
+   * @param {LogEntry | null} entry - The log entry to be edited, or `null` to clear the editing state.
+   */
   const handleSetEditingEntry = useCallback((entry: LogEntry | null) => {
     setEditingEntry(entry);
     if (entry) {
@@ -97,6 +156,14 @@ const App: React.FC = () => {
     }
   }, []);
 
+  /**
+   * @function handleDeleteEntry
+   * @description Deletes a log entry from Firebase Firestore using its ID.
+   * After successful deletion, it updates the `logEntries` state to remove the deleted entry
+   * and clears `editingEntry` if the deleted entry was being edited.
+   * It manages loading and error states during the deletion process.
+   * @param {string} idToDelete - The ID of the log entry to be deleted.
+   */
   const handleDeleteEntry = useCallback(async (idToDelete: string) => {
     setIsLoading(true);
     setError(null);
@@ -118,6 +185,15 @@ const App: React.FC = () => {
 
   const sortedEntries = logEntries;
 
+  /**
+   * @function formatTimeAgo
+   * @description Formats a given JavaScript `Date` object into a human-readable relative time string (e.g., "5 minutes ago", "2 days ago").
+   * It calculates the difference between the current time and the provided date and returns
+   * a string representing this duration in years, months, days, hours, minutes, or seconds.
+   * For very recent times (less than 10 seconds), it returns "just now".
+   * @param {Date} date - The date to format.
+   * @returns {string} A string representing the relative time ago.
+   */
   const formatTimeAgo = (date: Date): string => {
     const seconds = Math.floor((new Date().getTime() - date.getTime()) / 1000);
     let interval = seconds / 31536000;

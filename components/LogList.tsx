@@ -2,13 +2,29 @@ import React from 'react';
 import { LogItem } from './LogItem';
 import { LogEntry } from '../types';
 
+/**
+ * @interface LogListProps
+ * @description Defines the props for the `LogList` component.
+ */
 interface LogListProps {
+  /** @property {LogEntry[]} entries - An array of log entries to be displayed. */
   entries: LogEntry[];
+  /** @property {(entry: LogEntry) => void} onEditEntry - Callback function invoked when an edit action is triggered for an entry in the list. Passes the full entry to be edited. */
   onEditEntry: (entry: LogEntry) => void;
+  /** @property {(id: string) => void} onDeleteEntry - Callback function invoked when a delete action is triggered for an entry in the list. Passes the ID of the entry to be deleted. */
   onDeleteEntry: (id: string) => void;
+  /** @property {boolean} [isLoading] - Optional. Indicates if data affecting the list (e.g., fetching, deleting) is currently being processed. Used to conditionally render UI elements like "No activities logged yet". */
   isLoading?: boolean; // Optional: to indicate if list-affecting operations are in progress
 }
 
+/**
+ * @component LogList
+ * @description Renders a list of `LogItem` components based on the provided `entries`.
+ * It handles the display for scenarios where no entries exist (showing a message to guide the user)
+ * or when data might be loading (by optionally preventing the "No activities" message from showing prematurely).
+ * Each `LogItem` is passed callbacks for edit and delete actions.
+ * @param {LogListProps} props - The props for the component.
+ */
 export const LogList: React.FC<LogListProps> = ({ entries, onEditEntry, onDeleteEntry, isLoading }) => {
   // If it's not loading and there are no entries, then show the message.
   // Avoids showing "No activities" during the initial load.

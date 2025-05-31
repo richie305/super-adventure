@@ -2,32 +2,81 @@
 import React, { useState, useEffect, FormEvent } from 'react';
 import { LogType, BathroomActivity, LogEntryData, LogEntry, MealSubtype, PoopSubtype } from '../types';
 
+/**
+ * @interface LogEntryFormProps
+ * @description Defines the props for the `LogEntryForm` component.
+ */
 interface LogEntryFormProps {
+  /**
+   * @property onSaveEntry - Callback function to save a new or updated log entry.
+   * @param {LogEntryData} entryData - The data of the entry to be saved.
+   * @param {string} [idToUpdate] - Optional ID of the entry if it's an update.
+   */
   onSaveEntry: (entryData: LogEntryData, idToUpdate?: string) => void;
+  /**
+   * @property editingEntry - The log entry currently being edited. If `null`, the form is for a new entry.
+   */
   editingEntry: LogEntry | null;
+  /**
+   * @property onCancelEdit - Callback function to cancel the editing process.
+   */
   onCancelEdit: () => void;
 }
 
+/**
+ * @function formatDateForInput
+ * @description Formats a JavaScript `Date` object into a string suitable for an HTML date input field (YYYY-MM-DD).
+ * @param {Date} date - The date to format.
+ * @returns {string} The date formatted as 'YYYY-MM-DD'.
+ */
 const formatDateForInput = (date: Date): string => {
   return date.toISOString().split('T')[0];
 };
 
+/**
+ * @function formatTimeForInput
+ * @description Formats a JavaScript `Date` object into a string suitable for an HTML time input field (HH:MM).
+ * @param {Date} date - The date object whose time needs to be formatted.
+ * @returns {string} The time formatted as 'HH:MM'.
+ */
 const formatTimeForInput = (date: Date): string => {
   const hours = date.getHours().toString().padStart(2, '0');
   const minutes = date.getMinutes().toString().padStart(2, '0');
   return `${hours}:${minutes}`;
 };
 
+/**
+ * @component LogEntryForm
+ * @description A form component responsible for creating new log entries and editing existing ones.
+ * It handles user input for different types of activities (Bathroom, Meal) and their subtypes,
+ * manages form state, and interacts with parent components to save or cancel edits.
+ * @param {LogEntryFormProps} props - The props for the component.
+ */
 export const LogEntryForm: React.FC<LogEntryFormProps> = ({ onSaveEntry, editingEntry, onCancelEdit }) => {
+  /** @state `entryType` Manages the selected primary type of the log entry (e.g., Bathroom, Meal). */
   const [entryType, setEntryType] = useState<LogType>(LogType.Bathroom);
+  /** @state `bathroomActivity` Manages the selected specific bathroom activity (e.g., Pee, Poop, Both) if `entryType` is `Bathroom`. */
   const [bathroomActivity, setBathroomActivity] = useState<BathroomActivity>(BathroomActivity.Pee);
+  /** @state `poopSubtype` Manages the selected subtype of poop (e.g., Small, Normal) if `bathroomActivity` involves poop. */
   const [poopSubtype, setPoopSubtype] = useState<PoopSubtype>(PoopSubtype.Normal);
+  /** @state `mealNotes` Manages the text for notes related to a meal entry. */
   const [mealNotes, setMealNotes] = useState<string>('');
+  /** @state `editDate` Manages the date part of the timestamp when editing an entry. Stored as a string in 'YYYY-MM-DD' format. */
   const [editDate, setEditDate] = useState<string>('');
+  /** @state `editTime` Manages the time part of the timestamp when editing an entry. Stored as a string in 'HH:MM' format. */
   const [editTime, setEditTime] = useState<string>('');
+  /** @state `mealSubtype` Manages how a meal was obtained (e.g., Given, Stolen) if `entryType` is `Meal`. */
   const [mealSubtype, setMealSubtype] = useState<MealSubtype>(MealSubtype.Given);
+  /** @state `foodType` Manages the description of the food type for a meal entry (e.g., Kibble, Wet Food). */
   const [foodType, setFoodType] = useState<string>('Kibble');
 
+  /**
+   * @effect
+   * @description Populates the form fields when an `editingEntry` is provided or changes.
+   * It sets the form's state (entryType, bathroomActivity, mealNotes, etc.) based on the `editingEntry`'s data.
+   * If `editingEntry` is `null` (i.e., creating a new entry or canceling an edit), it resets the form to default values.
+   * @dependencies `editingEntry` - The effect runs when the `editingEntry` prop changes.
+   */
   useEffect(() => {
     if (editingEntry) {
       setEntryType(editingEntry.type);
@@ -61,6 +110,13 @@ export const LogEntryForm: React.FC<LogEntryFormProps> = ({ onSaveEntry, editing
     }
   }, [editingEntry]);
 
+  /**
+   * @function handleEntryTypeChange
+   * @description Handles changes to the main log entry type (Bathroom or Meal).
+   * It updates the `entryType` state and resets specific fields related to the previously selected type
+   * to ensure data consistency and a clean form state for the new type.
+   * @param {LogType} newType - The newly selected log entry type.
+   */
   const handleEntryTypeChange = (newType: LogType) => {
     setEntryType(newType);
     // Reset specific fields when type changes
@@ -76,6 +132,13 @@ export const LogEntryForm: React.FC<LogEntryFormProps> = ({ onSaveEntry, editing
     }
   };
 
+  /**
+   * @function handleBathroomActivityChange
+   * @description Handles changes to the specific bathroom activity (Pee, Poop, Both).
+   * It updates the `bathroomActivity` state. If the new activity is 'Pee',
+   * it resets the `poopSubtype` to its default value, as it's not relevant.
+   * @param {BathroomActivity} newActivity - The newly selected bathroom activity.
+   */
   const handleBathroomActivityChange = (newActivity: BathroomActivity) => {
     setBathroomActivity(newActivity);
     if (newActivity === BathroomActivity.Pee) {
@@ -83,7 +146,15 @@ export const LogEntryForm: React.FC<LogEntryFormProps> = ({ onSaveEntry, editing
     }
   };
 
-
+  /**
+   * @function handleSubmit
+   * @description Handles the form submission event.
+   * It prevents the default form submission, constructs the `LogEntryData` object based on the current form state,
+   * and calls the `onSaveEntry` prop function to save the data.
+   * If an entry is being edited (`editingEntry` is not null) and `editDate` and `editTime` are set,
+   * it constructs a new timestamp from these values, preserving the original seconds and milliseconds.
+   * @param {FormEvent} e - The form submission event.
+   */
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     const currentFormData: LogEntryData = { type: entryType };

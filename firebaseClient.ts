@@ -1,3 +1,11 @@
+/**
+ * @file firebaseClient.ts
+ * @description This file is responsible for initializing the Firebase app and configuring Firebase services.
+ * It sets up the Firebase configuration using environment variables, initializes the main Firebase app,
+ * and initializes services like Firestore and Analytics. These initialized services and relevant
+ * Firebase SDK functions are then exported for use throughout the application, providing a centralized
+ * point for Firebase integration.
+ */
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
@@ -33,12 +41,24 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
+/**
+ * @constant app
+ * @description The initialized Firebase app instance. This is the core of the Firebase setup.
+ */
 const app = initializeApp(firebaseConfig);
+/**
+ * @constant analytics
+ * @description The Firebase Analytics instance, used for tracking application usage and events.
+ */
 const analytics = getAnalytics(app);
 
 // If you need to use other Firebase services, import and initialize them here.
 // For example, for Firestore:
 // import { getFirestore } from "firebase/firestore";
+/**
+ * @constant db
+ * @description The Firebase Firestore database instance. Used for all Firestore database operations.
+ */
 const db = getFirestore(app);
 
 export {
